@@ -3,7 +3,9 @@
 ## Roles
 
 **airvpn** - Installs Software for the VPN Provider AirVPN on Ubuntu
+
 **tautulli** - Installs Tautulli Software on Ubuntu for Plex Monitoring
+
 **ubuntu-motd** - Installs a custom MOTD on Ubuntu
 
 ## Example
