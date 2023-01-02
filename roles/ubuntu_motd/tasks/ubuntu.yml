@@ -1,0 +1,31 @@
+---
+- name: Debian - Update Cache
+  apt: update_cache=yes
+  changed_when: false
+
+- name: Install Dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ dependencies }}"
+
+- name: Install new MOTD files
+  template:
+    src: "templates/{{ item }}.j2"
+    dest: "/etc/update-motd.d/{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+  with_items: "{{ motd_files }}"
+
+- name: Get all files currently in motd folder
+  command: find -L /etc/update-motd.d/ -maxdepth 1 -type f -printf '%f\n'
+  register: current_file_list
+  changed_when: false
+
+- name: Delete any old MOTD files
+  file:
+    path: "/etc/update-motd.d/{{ item }}"
+    state: absent
+  with_items: "{{ current_file_list.stdout_lines }}"
+  when: item not in motd_files

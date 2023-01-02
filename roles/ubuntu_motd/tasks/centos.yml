@@ -1,0 +1,51 @@
+---
+- name: Install Packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - epel-release
+    - ruby
+    - figlet
+
+- name: Install lolcat gem
+  gem:
+    name: lolcat
+    state: present
+    user_install: false
+
+- name: Create Directory for MOTD Scripts
+  file:
+    path: /usr/local/bin/motd-scripts
+    state: directory
+    mode: 0755
+
+- name: Install new MOTD files
+  template:
+    src: "templates/{{ item }}.j2"
+    dest: "/usr/local/bin/motd-scripts/{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
+    force: true
+  with_items: "{{ motd_files }}"
+
+- name: Get all files currently in motd folder
+  command: find -L /usr/local/bin/motd-scripts/ -maxdepth 1 -type f -printf '%f\n'
+  register: current_file_list
+  changed_when: false
+
+- name: Delete any old MOTD files
+  file:
+    path: "/usr/local/bin/motd-scripts/{{ item }}"
+    state: absent
+  with_items: "{{ current_file_list.stdout_lines }}"
+  when: item not in motd_files
+
+- name: Install Login Script
+  template:
+    src: "templates/login-info.j2"
+    dest: "/etc/profile.d/login-info.sh"
+    owner: root
+    group: root
+    mode: 0755

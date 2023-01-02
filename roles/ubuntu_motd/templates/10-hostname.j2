@@ -1,0 +1,7 @@
+#!/bin/bash
+
+{% if ansible_distribution == "Ubuntu" %}
+/usr/bin/env figlet -t -f banner "${HOSTNAME%%.*}" | /usr/bin/env /usr/games/lolcat -f
+{% else %}
+/usr/bin/env figlet -t -f banner "${HOSTNAME%%.*}" | /usr/bin/env lolcat -f
+{% endif %}

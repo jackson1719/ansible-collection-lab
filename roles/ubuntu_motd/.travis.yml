@@ -1,0 +1,26 @@
+---
+language: python
+env:
+  - ANSIBLE_VERSION=latest
+  - ANSIBLE_VERSION=2.8.8
+  - ANSIBLE_VERSION=2.7.16
+python:
+  - "2.7"
+  - "3.6"
+services:
+  - docker
+install:
+  - pip install --upgrade pip virtualenv virtualenvwrapper
+  - virtualenv ~/ansible$ANSIBLE_VERSION
+  - source ~/ansible$ANSIBLE_VERSION/bin/activate
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip install ansible; else pip install ansible==$ANSIBLE_VERSION; fi
+  - pip install molecule docker ansible-lint pytest testinfra
+before_script:
+  - cd ../
+  - mv ansible-linux-motd jackson_t.ansible-linux-motd
+  - cd jackson_t.ansible-linux-motd
+script:
+  - source ~/ansible$ANSIBLE_VERSION/bin/activate
+  - molecule --version
+  - ansible --version
+  - molecule test

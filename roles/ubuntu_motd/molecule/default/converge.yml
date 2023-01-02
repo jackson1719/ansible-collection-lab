@@ -1,0 +1,5 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: jackson_t.ansible-linux-motd

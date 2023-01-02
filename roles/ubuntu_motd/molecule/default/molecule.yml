@@ -1,0 +1,27 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint: |
+  yamllint .
+  ansible-lint
+platforms:
+  - name: CentOS_7
+    image: centos:7
+  - name: Ubuntu_18.04
+    image: ubuntu:18.04
+  - name: Ubuntu_16.04
+    image: ubuntu:16.04
+  - name: Debian_Stretch
+    image: debian:9
+provisioner:
+  name: ansible
+  playbooks:
+    converge: converge.yml
+scenario:
+  name: default
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

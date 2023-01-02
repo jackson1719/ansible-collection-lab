@@ -1,0 +1,14 @@
+---
+# vars file for ansible-motd
+dependencies:
+  - figlet
+  - lolcat
+
+motd_files:
+  - 10-hostname
+  - 20-sysinfo
+  - 35-diskspace
+  - 40-services
+
+centos_files:
+  - ruby
