@@ -1,0 +1,103 @@
+---
+# tasks file for ansible-linux-airvpn
+- name: Download AIRVPN Client
+  get_url:
+    url: https://eddie.website/repository/AirVPN-Suite/1.1/AirVPN-Suite-x86_64-1.1.0.tar.gz
+    dest: "{{ airvpn_install_dir }}/airvpn-suite.tar.gz"
+
+# Extract to home directory
+- name: Extract To Home Directory
+  ansible.builtin.unarchive:
+    src: "/tmp/airvpn-suite.tar.gz"
+    dest: "{{ airvpn_install_dir }}/"
+    remote_src: yes
+
+- name: Install Required Packages
+  ansible.builtin.package:
+    name:
+      - dbus
+      - libxml2
+      - openssl
+    state: latest
+
+# The below steps are taken from install.sh to make them idempotent
+- name: Install bluetit to /sbin/
+  ansible.builtin.copy:
+    src: "{{ airvpn_install_dir }}/AirVPN-Suite/bin/bluetit"
+    dest: /sbin/
+    remote_src: yes
+
+- name: Install goldcrest to /usr/local/bin or /usr/bin or /bin
+  ansible.builtin.copy:
+    src: "{{ airvpn_install_dir }}/AirVPN-Suite/bin/goldcrest"
+    dest: /usr/local/bin/
+    remote_src: yes
+
+- name: add additional users to group airvpn
+  ansible.builtin.group:
+    name: airvpn
+    state: present
+
+- name: Create user and group airvpn
+  ansible.builtin.user:
+    name: airvpn
+    group: airvpn
+
+# Copy the following files:
+- name: Copy Configuration Files to /etc/airvpn
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /etc/airvpn/
+    remote_src: yes
+    mode: '0660'
+  with_items:
+    - "{{ airvpn_install_dir }}/AirVPN-Suite/etc/airvpn/connection_priority.txt"
+    - "{{ airvpn_install_dir }}/AirVPN-Suite/etc/airvpn/connection_sequence.csv"
+    - "{{ airvpn_install_dir }}/AirVPN-Suite/etc/airvpn/airvpn-manifest.xml"
+    - "{{ airvpn_install_dir }}/AirVPN-Suite/etc/airvpn/country_continent.csv"
+    - "{{ airvpn_install_dir }}/AirVPN-Suite/etc/airvpn/country_names.csv"
+
+- name: Install Custom bluetit.rc file
+  ansible.builtin.template:
+    src: bluetit.rc.j2
+    dest: /etc/airvpn/bluetit.rc
+    #owner: root
+    #group: root
+    #mode: u=rw,g=r,o=r
+
+# Change Files/directory to 660 "chmod 660 -R /etc/airvpn"
+- name: Update Permissions to 660 for /etc/airvpn
+  file:
+    dest: /etc/airvpn
+    mode: '0660'
+    recurse: yes
+
+# copy dbus files from airvpn/etc/dbus-1\system.d to /etc/dbus-1/system.d/
+# Change perm to 644
+- name: Copy airvpn dbus files
+  ansible.builtin.copy:
+    src: "{{ airvpn_install_dir }}/AirVPN-Suite/etc/dbus-1/system.d/"
+    dest: /etc/dbus-1/system.d/
+    remote_src: yes
+    mode: '0644'
+  register: dbus_changed
+
+- name: Restart dbus socket
+  ansible.builtin.systemd:
+    name: dbus.socket
+    state: restarted
+  when: dbus_changed|bool
+
+# Copy systemd file from airvpn/etc/systemd/system/bluetit.service /etc/systemd/system and enable systemd unit. perform daemon reload
+- name: Install systemd unit file for bluetit
+  ansible.builtin.copy:
+    src: "{{ airvpn_install_dir }}/AirVPN-Suite/etc/systemd/system/bluetit.service"
+    dest: /etc/systemd/system/
+    remote_src: yes
+
+# Install Systemd Service
+- name: Enable systemd airvpn service
+  ansible.builtin.systemd:
+    name: bluetit
+    enabled: yes
+    state: started
