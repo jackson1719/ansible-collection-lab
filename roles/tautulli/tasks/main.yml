@@ -1,0 +1,3 @@
+---
+- name: Include tautulli install
+  ansible.builtin.include_tasks: install-tautulli.yml

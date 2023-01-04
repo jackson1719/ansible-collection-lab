@@ -1,0 +1,14 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: jackson1719.ansible-role-tautulli
+
+  post_tasks:
+    - name: Wait for Tautulli to succesfully restart
+      ansible.builtin.wait_for:
+        port: 8181
+
+    - name: Test Tautulli webinterface
+      ansible.builtin.uri:
+        url: "http://{{ inventory_hostname }}:8181/home"

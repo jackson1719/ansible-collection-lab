@@ -1,0 +1,49 @@
+---
+- name: Install Required Pacakges
+  ansible.builtin.package:
+    name:
+      - git
+      - python3.7
+      - python3-setuptools
+    state: present
+
+- name: Create Group
+  ansible.builtin.user:
+    name: "{{ tautulli_group }}"
+    state: present
+
+- name: Create User
+  ansible.builtin.user:
+    name: "{{ tautulli_user }}"
+    group: "{{ tautulli_group }}"
+    createhome: false
+
+- name: Clone Tautulli Repo
+  ansible.builtin.git:
+    repo: https://github.com/Tautulli/Tautulli.git
+    dest: "{{ tautulli_install_location }}"
+    version: "{{ tautulli_version }}"
+
+- name: Set Tautulli Dir Permissions
+  ansible.builtin.file:
+    path: "{{ tautulli_install_location }}"
+    owner: "{{ tautulli_user }}"
+    group: "{{ tautulli_group }}"
+    recurse: true
+    state: directory
+  changed_when: false
+
+- name: Install systemd script
+  ansible.builtin.template:
+    src: tautulli/init-systemd.j2
+    dest: /lib/systemd/system/tautulli.service
+    owner: root
+    group: root
+    mode: 0775
+
+- name: Autostart Tautulli and restart service
+  ansible.builtin.systemd:
+    name: tautulli
+    enabled: true
+    daemon_reload: true
+  notify: restart tautulli

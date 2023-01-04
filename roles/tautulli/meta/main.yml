@@ -1,0 +1,47 @@
+---
+galaxy_info:
+  namespace: jackson1719
+  role_name: ansible-role-tautulli
+  author:
+    - "jackson1719"
+    - "wilmardo"
+
+  description: |
+    Role to install Tautulli (former PlexPy). Forked from wilmardo/ansible-role-tautulli
+
+  license:
+    - BSD-3-Clause-Clear
+
+  min_ansible_version: 2.11
+
+  platforms:
+    - name: EL
+      versions:
+        - 7
+
+    - name: Debian
+      versions:
+        # Debian 10 "Buster" - EOL June 2024
+        - buster
+        # Debian 11 "Bullseye" - EOL June 2026
+        - bullseye
+
+    - name: Ubuntu
+      versions:
+        # Ubuntu 18.04 - EOL 2023-04-26
+        - bionic
+        # Ubuntu 20.04 - EOL 2025-04-23
+        - focal
+        # Ubuntu 22.04 - EOL 2027-04-21
+        - jammy
+
+  galaxy_tags:
+    - tautulli
+    - plexpy
+    - plexmediaserver
+    - plex
+    - monitoring
+    - plexstatistics
+    - system
+
+  dependencies: []
