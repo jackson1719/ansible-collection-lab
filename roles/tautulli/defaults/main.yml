@@ -9,5 +9,5 @@ tautulli_group: tautulli
 tautulli_install_location: /opt/Tautulli/
 # Tautulli configuration location (recommended is to put it somewhere in /etc)
 tautulli_config_location: /etc/tautulli-config.ini
-# Tautulli data location (recommended is to NOT put it in your Tautulli exec dir)
+# Tautulli data location (recommended to NOT put it in your Tautulli exec dir)
 tautulli_data_location: "{{ tautulli_install_location }}/data"

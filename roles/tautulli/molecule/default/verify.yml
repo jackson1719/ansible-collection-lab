@@ -1,10 +1,8 @@
 ---
-- name: Converge
+- name: Verify
   hosts: all
-  roles:
-    - role: jackson1719.ansible-role-tautulli
-
-  post_tasks:
+  gather_facts: false
+  tasks:
     - name: Wait for Tautulli to succesfully restart
       ansible.builtin.wait_for:
         port: 8181

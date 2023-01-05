@@ -1,0 +1,7 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: Include Tautulli Role
+      ansible.builtin.include_role:
+        name: jackson1719.lab.tautulli

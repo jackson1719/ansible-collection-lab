@@ -1,0 +1,45 @@
+---
+dependency:
+  name: galaxy
+  options:
+    role-file: requirements.yml
+
+driver:
+  name: docker
+
+lint:
+  name: yamllint
+  options:
+    config-file: ${DEV_MOLECULE_RULES}/yaml-lint.yml
+
+platforms:
+  - name: tautulli-CentOS7
+    image: lansible/centos:7
+
+  - name: tautulli-Debian11
+    image: lansible/debian:11
+
+  - name: tautulli-Debian10
+    image: lansible/debian:10
+
+  - name: tautulli-Ubuntu2204
+    image: lansible/ubuntu:22.04
+
+  - name: tautulli-Ubuntu2004
+    image: lansible/ubuntu:20.04
+
+  - name: tautulli-Ubuntu1804
+    image: lansible/ubuntu:18.04
+
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_whitelist: profile_tasks
+  lint:
+    name: ansible-lint
+    options:
+      c: ${DEV_MOLECULE_RULES}/ansible-lint.yml
+
+scenario:
+  name: default

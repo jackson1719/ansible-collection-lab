@@ -1,5 +1,5 @@
 ---
-- name: restart tautulli
+- name: Restart tautulli
   ansible.builtin.service:
     name: tautulli
     state: restarted

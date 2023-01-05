@@ -2,12 +2,10 @@
 galaxy_info:
   namespace: jackson1719
   role_name: ansible-role-tautulli
-  author:
-    - "jackson1719"
-    - "wilmardo"
+  author: "jackson1719"
 
   description: |
-    Role to install Tautulli (former PlexPy). Forked from wilmardo/ansible-role-tautulli
+    Role to install Tautulli. Forked from wilmardo/ansible-role-tautulli
 
   license:
     - BSD-3-Clause-Clear
@@ -43,5 +41,3 @@ galaxy_info:
     - monitoring
     - plexstatistics
     - system
-
-  dependencies: []

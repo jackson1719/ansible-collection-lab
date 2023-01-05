@@ -1,10 +1,11 @@
 ---
 - name: Install Required Pacakges
-  ansible.builtin.package:
+  ansible.builtin.apt:
     name:
       - git
       - python3
       - python3-setuptools
+    update_cache: true
     state: present
 
 - name: Create Group
@@ -17,21 +18,25 @@
     name: "{{ tautulli_user }}"
     group: "{{ tautulli_group }}"
     createhome: false
+    system: true
+    state: present
+
+- name: Make Tautulli Directory
+  ansible.builtin.file:
+    path: "{{ tautulli_install_location }}"
+    owner: "{{ tautulli_user }}"
+    group: "{{ tautulli_group }}"
+    state: directory
+    mode: 0775
 
 - name: Clone Tautulli Repo
   ansible.builtin.git:
     repo: https://github.com/Tautulli/Tautulli.git
     dest: "{{ tautulli_install_location }}"
     version: "{{ tautulli_version }}"
-
-- name: Set Tautulli Dir Permissions
-  ansible.builtin.file:
-    path: "{{ tautulli_install_location }}"
-    owner: "{{ tautulli_user }}"
-    group: "{{ tautulli_group }}"
-    recurse: true
-    state: directory
-  changed_when: false
+    update: true
+  become: true
+  become_user: "{{ tautulli_user }}"
 
 - name: Install systemd script
   ansible.builtin.template:
@@ -46,4 +51,4 @@
     name: tautulli
     enabled: true
     daemon_reload: true
-  notify: restart tautulli
+  notify: Restart tautulli
